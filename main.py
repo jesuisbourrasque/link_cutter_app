@@ -1,3 +1,4 @@
+import sqlite3
 import sys
 import shortuuid
 
@@ -17,21 +18,18 @@ def main():
         if generate:
             try:
                 database.add_long_url(url)
-            except Exception:
+            except sqlite3.IntegrityError:
                 pass
-            if short_url:
-                try:
-                    database.add_short_url(short_url)
-                    print(f'Короткая ссылка на вашу {short_url}')
-                except Exception:
-                    print(f'Такая короткая ссылка уже существует: {short_url}')
-            elif not short_url:
-                try:
+            try:
+                if short_url:
+                    pass
+                elif not short_url:
                     short_url = shortuuid.uuid(url)
-                    database.add_short_url(short_url)
-                    print(f'Короткая ссылка на вашу {short_url}')
-                except Exception as e:
-                    print(e)
+                database.add_short_url(short_url)
+            except sqlite3.IntegrityError:
+                print(f'Такая короткая ссылка уже существует: {short_url}')
+            else:
+                print(f'Короткая ссылка на вашу {short_url}')
         if not generate and url:
             long_url = database.select_long_url(url)
             if long_url:
