@@ -11,6 +11,7 @@ class DB:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.commit()
         self.connection.close()
 
     def execute(self, query: str, parameters: tuple = ()):
