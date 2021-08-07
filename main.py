@@ -17,7 +17,7 @@ def main():
         db.create_schema()
         if generate:
             try:
-                database.add_long_url(url)
+                long_url_id = database.add_long_url(url)
             except sqlite3.IntegrityError:
                 pass
             try:
@@ -25,17 +25,19 @@ def main():
                     pass
                 elif not short_url:
                     short_url = shortuuid.uuid(url)
-                database.add_short_url(short_url)
+                database.add_short_url(short_url, long_url_id)
             except sqlite3.IntegrityError:
                 print(f'Такая короткая ссылка уже существует: {short_url}')
             else:
                 print(f'Короткая ссылка на вашу {short_url}')
         if not generate and url:
-            long_url = database.select_long_url(url)
-            if long_url:
-                print(long_url)
-            else:
+            try:
+                long_url = database.select_long_url(url)
+            except TypeError:
                 print('Такой ссылки нет')
+            else:
+                print(long_url)
+
 
 
 if __name__ == '__main__':

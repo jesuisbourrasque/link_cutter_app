@@ -37,10 +37,11 @@ class DB:
     def add_long_url(self, long_url):
         query = "INSERT INTO long_urls(long_url) VALUES(?)"
         self.execute(query, (long_url,))
+        return self.cursor.lastrowid
 
-    def add_short_url(self, short_url):
+    def add_short_url(self, short_url, id):
         query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
-        self.execute(query, (short_url, self.cursor.lastrowid))
+        self.execute(query, (short_url, id))
 
     def select_long_url(self, short_url):
         """Return long ulr by short url"""
