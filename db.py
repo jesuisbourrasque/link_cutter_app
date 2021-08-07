@@ -25,12 +25,12 @@ class DB:
         """
         self.execute(query)
         query = """
-                    CREATE TABLE IF NOT EXISTS short_urls(
-                    short_url TEXT NOT NULL UNIQUE,
-                    id INTEGER NOT NULL,
-                    FOREIGN KEY(id) REFERENCES long_urls(id)
-                    )
-                """
+            CREATE TABLE IF NOT EXISTS short_urls(
+            short_url TEXT NOT NULL UNIQUE,
+            id INTEGER NOT NULL,
+            FOREIGN KEY(id) REFERENCES long_urls(id)
+            )
+        """
         self.execute(query)
 
     def add_long_url(self, long_url):
@@ -43,7 +43,13 @@ class DB:
 
     def select_long_url(self, short_url):
         """Return long ulr by short url"""
-        query = "SELECT long_url FROM long_urls JOIN short_urls ON long_urls.id = short_urls.id WHERE short_url = ?"
+        query = """
+            SELECT long_url 
+            FROM long_urls 
+            JOIN short_urls 
+                ON long_urls.id = short_urls.id 
+            WHERE short_url = ?
+        """
         self.execute(query, (short_url,))
         return self.cursor.fetchone()
 
