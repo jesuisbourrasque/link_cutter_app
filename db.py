@@ -14,16 +14,7 @@ class DB:
         self.connection.close()
 
     def execute(self, query: str, parameters: tuple = ()):
-        cursor = self.cursor
-        cursor.execute(query, parameters)
-
-    def fetchone(self):
-        data = self.cursor.fetchone()
-        return data
-
-    def fetchall(self):
-        data = self.cursor.fetchall()
-        return data
+        self.cursor.execute(query, parameters)
 
     def create_schema(self):
         query = """
@@ -46,19 +37,16 @@ class DB:
         query = "INSERT INTO long_urls(long_url) VALUES(?)"
         self.execute(query, (long_url,))
 
-    def lastrowid(self):
-        return self.cursor.lastrowid
-
     def add_short_url(self, short_url):
         query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
-        self.execute(query, (short_url, self.lastrowid()))
+        self.execute(query, (short_url, self.cursor.lastrowid))
 
     def select_long_url(self, short_url):
         """Return long ulr by short url"""
         query = "SELECT id FROM short_urls WHERE short_url = ?"
         self.execute(query, (short_url,))
-        long_url_id = self.fetchone()
+        long_url_id = self.cursor.fetchone()
         query = "SELECT long_url FROM long_urls WHERE id = ?"
         self.execute(query, (long_url_id,))
-        return self.fetchone()
+        return self.cursor.fetchone()
 
