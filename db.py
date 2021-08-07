@@ -52,7 +52,7 @@ class DB:
             WHERE short_url = ?
         """
         self.execute(query, (short_url,))
-        return self.cursor.fetchone()
+        return self.cursor.fetchone()[0]
 
     def select_all(self):
         query = "SELECT * FROM long_urls"

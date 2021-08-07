@@ -22,21 +22,20 @@ def main():
             if short_url:
                 try:
                     database.add_short_url(short_url)
-                    print(f'Короткая ссылка на вашу {short_url}2')
+                    print(f'Короткая ссылка на вашу {short_url}')
                 except Exception:
                     print(f'Такая короткая ссылка уже существует: {short_url}')
-            else:
+            elif not short_url:
                 try:
                     short_url = shortuuid.uuid(url)
                     database.add_short_url(short_url)
-                    print(f'Короткая ссылка на вашу {short_url}1')
-                except Exception:
-                    print('Fuck')
+                    print(f'Короткая ссылка на вашу {short_url}')
+                except Exception as e:
+                    print(e)
         if not generate and url:
             long_url = database.select_long_url(url)
-            print(long_url)
             if long_url:
-                print(url)
+                print(long_url)
             else:
                 print('Такой ссылки нет')
 
