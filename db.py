@@ -1,14 +1,10 @@
 import sqlite3
-from sqlite3 import IntegrityError
 
 
 class DB:
-    def __init__(self):
-        self.path_to_db = "main_db.db"
-        self.connection = sqlite3.connect(self.path_to_db)
-        self.cursor = self.connection.cursor()
-
     def __enter__(self):
+        self.connection = sqlite3.connect("main_db.db")
+        self.cursor = self.connection.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -54,5 +50,6 @@ class DB:
             WHERE short_url = ?
         """
         self.cursor.execute(query, (short_url,))
-        return self.cursor.fetchone()[0]
+        if long_url := self.cursor.fetchone()[0]:
+            return long_url
 
