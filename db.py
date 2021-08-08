@@ -1,9 +1,10 @@
 import sqlite3
+from typing import Optional
 
 
 class DB:
     def __enter__(self):
-        self.connection = sqlite3.connect("main_db.db")
+        self.connection = sqlite3.connect('main_db.db')
         self.cursor = self.connection.cursor()
         return self
 
@@ -28,28 +29,56 @@ class DB:
         """
         self.cursor.execute(query)
 
-    def add_url(self, long_url, short_url):
-        query = "SELECT long_urls.id FROM long_urls WHERE long_urls.long_url = ?"
+    def add_url(self, long_url: str, short_url: str) -> bool:
+        """
+        :param long_url: url by user input
+        :param short_url: url by user input or generated
+        :return:
+        """
+        query = """
+            SELECT long_urls.id 
+            FROM long_urls 
+            WHERE long_urls.long_url = ?
+        """
         long_url_id = self.cursor.execute(query, (long_url,))
         if long_url_id := long_url_id.fetchone():
             return self.add_short_url(short_url, long_url_id[0])
         else:
-            query = "INSERT INTO long_urls(long_url) VALUES (?)"
+            query = """
+                INSERT INTO long_urls(long_url) 
+                VALUES (?)
+            """
             self.cursor.execute(query, (long_url,))
             return self.add_short_url(short_url, self.cursor.lastrowid)
 
-    def add_short_url(self, short_url, long_url_id):
-        query = "SELECT short_url FROM short_urls WHERE short_urls = ?"
+    def add_short_url(self, short_url: str, long_url_id: int) -> bool:
+        """
+        :param short_url: url by user input or generated
+        :param long_url_id: id of long_url in the long_urls table
+        :return: if short_url exists -> False else -> True
+        """
+        query = """
+            SELECT short_url 
+            FROM short_urls 
+            WHERE short_urls = ?
+        """
         is_short_url = self.cursor.execute(query, (short_url,))
         if is_short_url.fetchone():
             return False
         else:
-            query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
+            query = """
+                INSERT INTO short_urls(short_url, id) 
+                VALUES(?, ?)
+            """
             self.cursor.execute(query, (short_url, long_url_id))
             return True
 
-    def select_long_url(self, short_url):
-        """Return long ulr by short url"""
+    def select_long_url(self, short_url: str) -> Optional[str]:
+        """
+        Select long url in the long_urls table by short_url
+        :param short_url: url by user input or generated
+        :return: Long url if exists or None
+        """
         query = """
             SELECT long_url 
             FROM long_urls 
@@ -60,4 +89,3 @@ class DB:
         self.cursor.execute(query, (short_url,))
         if long_url := self.cursor.fetchone():
             return long_url[0]
-

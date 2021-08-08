@@ -1,8 +1,11 @@
 import argparse
+from typing import Optional
 
 
-def parse_args(args):
-    """Parse console arguments"""
+def parse_args(args: list) -> Optional[argparse.Namespace]:
+    """
+    Parse console arguments
+    """
     parser = argparse.ArgumentParser(description='Url Cutter App')
     parser.add_argument('url', type=str, default=None, help='pass the url to cut it down')
     parser.add_argument('--generate', action='store_true', help='use this argument to generate short url')
