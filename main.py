@@ -19,7 +19,7 @@ def main():
     args = parse_args(sys.argv[1:])
     url = args.url
     generate = args.generate
-    short_url = args.short_url
+    short_url = args.short_urlpylint
     with DB() as db:
         db.create_schema()
         if generate:

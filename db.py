@@ -3,16 +3,18 @@ from typing import Optional
 
 
 class DB:
-    def __enter__(self):
+    def __init__(self):
         self.connection = sqlite3.connect('main_db.db')
         self.cursor = self.connection.cursor()
+
+    def __enter__(self) -> 'DB':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.connection.commit()
         self.connection.close()
 
-    def create_schema(self):
+    def create_schema(self) -> None:
         query = """
             CREATE TABLE IF NOT EXISTS long_urls(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,13 +45,13 @@ class DB:
         long_url_id = self.cursor.execute(query, (long_url,))
         if long_url_id := long_url_id.fetchone():
             return self.add_short_url(short_url, long_url_id[0])
-        else:
-            query = """
-                INSERT INTO long_urls(long_url) 
-                VALUES (?)
-            """
-            self.cursor.execute(query, (long_url,))
-            return self.add_short_url(short_url, self.cursor.lastrowid)
+
+        query = """
+            INSERT INTO long_urls(long_url) 
+            VALUES (?)
+        """
+        self.cursor.execute(query, (long_url,))
+        return self.add_short_url(short_url, self.cursor.lastrowid)
 
     def add_short_url(self, short_url: str, long_url_id: int) -> bool:
         """
@@ -65,13 +67,13 @@ class DB:
         is_short_url = self.cursor.execute(query, (short_url,))
         if is_short_url.fetchone():
             return False
-        else:
-            query = """
-                INSERT INTO short_urls(short_url, id) 
-                VALUES(?, ?)
-            """
-            self.cursor.execute(query, (short_url, long_url_id))
-            return True
+
+        query = """
+            INSERT INTO short_urls(short_url, id) 
+            VALUES(?, ?)
+        """
+        self.cursor.execute(query, (short_url, long_url_id))
+        return True
 
     def select_long_url(self, short_url: str) -> Optional[str]:
         """
