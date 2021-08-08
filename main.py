@@ -1,7 +1,6 @@
 import sys
 import shortuuid
 
-from sqlite3 import IntegrityError
 from db import DB
 from parser import parse_args
 
