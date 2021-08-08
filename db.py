@@ -4,10 +4,12 @@ from typing import Optional
 
 class DB:
     def __init__(self):
-        self.connection = sqlite3.connect('main_db.db')
-        self.cursor = self.connection.cursor()
+        self.connection = None
+        self.cursor = None
 
     def __enter__(self) -> 'DB':
+        self.connection = sqlite3.connect('main_db.db')
+        self.cursor = self.connection.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
