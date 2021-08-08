@@ -14,14 +14,12 @@ def main():
     with DB() as db:
         db.create_schema()
         if generate:
-            try:
-                if not short_url:
-                    short_url = shortuuid.uuid(url)
-                db.add_url(url, short_url)
-            except IntegrityError:
-                print(f'Такая короткая ссылка уже существует: {short_url}')
-            else:
+            if not short_url:
+                short_url = shortuuid.uuid(url)
+            if db.add_url(url, short_url):
                 print(f'Короткая ссылка на вашу {short_url}')
+            else:
+                print(f'Такая короткая ссылка уже существует: {short_url}')
         if not generate and url:
             if long_url := db.select_long_url(url):
                 print(long_url)

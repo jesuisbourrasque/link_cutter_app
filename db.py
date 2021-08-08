@@ -32,13 +32,21 @@ class DB:
         query = "SELECT long_urls.id FROM long_urls WHERE long_urls.long_url = ?"
         long_url_id = self.cursor.execute(query, (long_url,))
         if long_url_id := long_url_id.fetchone():
-            long_url_id = long_url_id[0]
+            return self.add_short_url(short_url, long_url_id[0])
         else:
             query = "INSERT INTO long_urls(long_url) VALUES (?)"
             self.cursor.execute(query, (long_url,))
-            long_url_id = self.cursor.lastrowid
-        query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
-        self.cursor.execute(query, (short_url, long_url_id,))
+            return self.add_short_url(short_url, self.cursor.lastrowid)
+
+    def add_short_url(self, short_url, long_url_id):
+        query = "SELECT short_url FROM short_urls WHERE short_urls = ?"
+        is_short_url = self.cursor.execute(query, (short_url,))
+        if is_short_url.fetchone():
+            return False
+        else:
+            query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
+            self.cursor.execute(query, (short_url, long_url_id))
+            return True
 
     def select_long_url(self, short_url):
         """Return long ulr by short url"""
@@ -50,6 +58,6 @@ class DB:
             WHERE short_url = ?
         """
         self.cursor.execute(query, (short_url,))
-        if long_url := self.cursor.fetchone()[0]:
-            return long_url
+        if long_url := self.cursor.fetchone():
+            return long_url[0]
 
