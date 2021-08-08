@@ -1,9 +1,10 @@
 import sqlite3
+from sqlite3 import IntegrityError
 
 
 class DB:
     def __init__(self):
-        self.path_to_db = "db.db"
+        self.path_to_db = "main_db.db"
         self.connection = sqlite3.connect(self.path_to_db)
         self.cursor = self.connection.cursor()
 
@@ -14,9 +15,6 @@ class DB:
         self.connection.commit()
         self.connection.close()
 
-    def execute(self, query: str, parameters: tuple = ()):
-        self.cursor.execute(query, parameters)
-
     def create_schema(self):
         query = """
             CREATE TABLE IF NOT EXISTS long_urls(
@@ -24,7 +22,7 @@ class DB:
             long_url TEXT NOT NULL UNIQUE
             )
         """
-        self.execute(query)
+        self.cursor.execute(query)
         query = """
             CREATE TABLE IF NOT EXISTS short_urls(
             short_url TEXT NOT NULL UNIQUE,
@@ -32,16 +30,19 @@ class DB:
             FOREIGN KEY(id) REFERENCES long_urls(id)
             )
         """
-        self.execute(query)
+        self.cursor.execute(query)
 
-    def add_long_url(self, long_url):
-        query = "INSERT INTO long_urls(long_url) VALUES(?)"
-        self.execute(query, (long_url,))
-        return self.cursor.lastrowid
-
-    def add_short_url(self, short_url, id):
+    def add_url(self, long_url, short_url):
+        query = "SELECT long_urls.id FROM long_urls WHERE long_urls.long_url = ?"
+        long_url_id = self.cursor.execute(query, (long_url,))
+        if long_url_id := long_url_id.fetchone():
+            long_url_id = long_url_id[0]
+        else:
+            query = "INSERT INTO long_urls(long_url) VALUES (?)"
+            self.cursor.execute(query, (long_url,))
+            long_url_id = self.cursor.lastrowid
         query = "INSERT INTO short_urls(short_url, id) VALUES(?, ?)"
-        self.execute(query, (short_url, id))
+        self.cursor.execute(query, (short_url, long_url_id,))
 
     def select_long_url(self, short_url):
         """Return long ulr by short url"""
@@ -52,11 +53,6 @@ class DB:
                 ON long_urls.id = short_urls.id 
             WHERE short_url = ?
         """
-        self.execute(query, (short_url,))
+        self.cursor.execute(query, (short_url,))
         return self.cursor.fetchone()[0]
-
-    def select_all(self):
-        query = "SELECT * FROM long_urls"
-        self.execute(query)
-        return self.cursor.fetchall()
 

@@ -1,7 +1,7 @@
-import sqlite3
 import sys
 import shortuuid
 
+from sqlite3 import IntegrityError
 from db import DB
 from parser import parse_args
 
@@ -17,16 +17,12 @@ def main():
         db.create_schema()
         if generate:
             try:
-                long_url_id = database.add_long_url(url)
-            except sqlite3.IntegrityError:
-                pass
-            try:
                 if short_url:
                     pass
                 elif not short_url:
                     short_url = shortuuid.uuid(url)
-                database.add_short_url(short_url, long_url_id)
-            except sqlite3.IntegrityError:
+                database.add_url(url, short_url)
+            except IntegrityError:
                 print(f'Такая короткая ссылка уже существует: {short_url}')
             else:
                 print(f'Короткая ссылка на вашу {short_url}')
@@ -37,7 +33,6 @@ def main():
                 print('Такой ссылки нет')
             else:
                 print(long_url)
-
 
 
 if __name__ == '__main__':
