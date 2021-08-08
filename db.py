@@ -64,7 +64,7 @@ class DB:
         query = """
             SELECT short_url 
             FROM short_urls 
-            WHERE short_urls = ?
+            WHERE short_url = ?
         """
         is_short_url = self.cursor.execute(query, (short_url,))
         if is_short_url.fetchone():
