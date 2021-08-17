@@ -1,2 +1,2 @@
-shortuuid=export FLASK_APP=hello_world.py=1.0.1
+shortuuid=1.0.1
 Flask==2.0.1

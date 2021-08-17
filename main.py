@@ -30,8 +30,6 @@ def main(url=None, short_url=None, generate=False):
         else:
             if long_url := db.select_long_url(url):
                 return long_url
-            else:
-                return 'There is no such link'
 
 
 if __name__ == '__main__':

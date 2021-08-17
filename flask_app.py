@@ -29,10 +29,11 @@ def post_links():
 
 @app.route('/short_link/<link>', methods=['GET'])
 def get_link(link):
-    data = main(url=link)
+    if data := main(url=link):
+        return redirect(data, code=302)
     return render_template(
         'link.html',
-        data=data
+        data='No such a link'
     )
 
 
