@@ -1,0 +1,25 @@
+{% block content %}
+<title>Link Cutter App</title>
+<div class="column" align="center">
+    <h3 class="title">Create Your Short Link</h3>
+    <div class="box">
+        <form method="POST" action="/short_link">
+            {% if attention %}
+            <h1>{{attention}}</h1>
+            {% endif %}
+            <div class="field">
+                <div class="control">
+                    <input class="input long link" type="long_link" name="long_link" placeholder="Long Link" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input short link" type="short_link" name="short_link" placeholder="Short Link *optional">
+                </div>
+            </div>
+            <button class="button">Add</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

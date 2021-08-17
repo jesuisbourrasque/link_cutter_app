@@ -3,10 +3,9 @@ import sys
 import shortuuid
 
 from db import DB
-from parser import parse_args
 
 
-def main():
+def main(url=None, short_url=None, generate=False):
     """
     if the user uses the --generate argument
         if the user uses the --short_urls argument with parameter short_url
@@ -16,24 +15,23 @@ def main():
     else the user input short_url
          try to find a long link in the database
     """
-    args = parse_args(sys.argv[1:])
-    url = args.url
-    generate = args.generate
-    short_url = args.short_url
+    url = url
+    generate = generate
+    short_url = short_url
     with DB() as db:
         db.create_schema()
         if generate:
             if not short_url:
                 short_url = shortuuid.uuid(url)
             if db.add_url(url, short_url):
-                print(f'Short link to yours: {short_url}')
+                return f'Short link to yours: {short_url}'
             else:
-                print(f'Such a short link already exists: {short_url}')
+                return f'Such a short link already exists: {short_url}'
         else:
             if long_url := db.select_long_url(url):
-                print(long_url)
+                return long_url
             else:
-                print('There is no such link')
+                return 'There is no such link'
 
 
 if __name__ == '__main__':
