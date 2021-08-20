@@ -48,7 +48,7 @@ class DB:
         """
         long_url_id = self.cursor.execute(query, (long_url,))
         if long_url_id := long_url_id.fetchone():
-            return self.post_short_link(str, short_url, long_url_id[0])
+            return self.post_short_link(long_url, short_url, long_url_id[0])
 
         query = """
             INSERT INTO long_urls(long_url) 
