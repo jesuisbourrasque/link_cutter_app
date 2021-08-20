@@ -39,6 +39,8 @@ def get_link(link):
 
 
 if __name__ == "__main__":
+    with DB() as db:
+        db.create_schema()
     # Quick test configuration. Please use proper Flask configuration options
     # in production settings, and use a separate file or environment variables
     # to manage the secret key!
