@@ -1,6 +1,8 @@
 import sqlite3
 from typing import Optional
 
+import shortuuid
+
 
 class DB:
     def __init__(self):
@@ -33,7 +35,7 @@ class DB:
         """
         self.cursor.execute(query)
 
-    def add_url(self, long_url: str, short_url: str) -> bool:
+    def post_links(self, long_url: str = None, short_url: str = None) -> bool:
         """
         :param long_url: url by user input
         :param short_url: url by user input or generated
@@ -46,17 +48,18 @@ class DB:
         """
         long_url_id = self.cursor.execute(query, (long_url,))
         if long_url_id := long_url_id.fetchone():
-            return self.add_short_url(short_url, long_url_id[0])
+            return self.post_short_link(str, short_url, long_url_id[0])
 
         query = """
             INSERT INTO long_urls(long_url) 
             VALUES (?)
         """
         self.cursor.execute(query, (long_url,))
-        return self.add_short_url(short_url, self.cursor.lastrowid)
+        return self.post_short_link(long_url, short_url, self.cursor.lastrowid)
 
-    def add_short_url(self, short_url: str, long_url_id: int) -> bool:
+    def post_short_link(self, long_url: str = None, short_url: str = None, long_url_id: int = None) -> bool:
         """
+        :param long_url:
         :param short_url: url by user input or generated
         :param long_url_id: id of long_url in the long_urls table
         :return: if short_url exists -> False else -> True
@@ -69,7 +72,8 @@ class DB:
         is_short_url = self.cursor.execute(query, (short_url,))
         if is_short_url.fetchone():
             return False
-
+        if not short_url:
+            short_url = shortuuid.uuid(long_url)
         query = """
             INSERT INTO short_urls(short_url, id) 
             VALUES(?, ?)
@@ -77,7 +81,7 @@ class DB:
         self.cursor.execute(query, (short_url, long_url_id))
         return True
 
-    def select_long_url(self, short_url: str) -> Optional[str]:
+    def get_link(self, short_url: str) -> Optional[str]:
         """
         Select long url in the long_urls table by short_url
         :param short_url: url by user input or generated

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect
-from main import main
+from db import DB
 
 app = Flask(__name__)
 
@@ -20,20 +20,22 @@ def post_links():
             'index.html',
             attention='Please enter long url'
         )
-    data = main(long_link, short_link, generate=True)
-    return render_template(
-        'link.html',
-        data=data
-    )
+    with DB() as db:
+        data = db.post_links(long_link, short_link)
+        return render_template(
+            'link.html',
+            data=data
+        )
 
 
 @app.route('/short_link/<link>', methods=['GET'])
 def get_link(link):
-    if data := main(url=link):
-        return redirect(data, code=302)
-    return render_template(
-        '404.html'
-    ), 404
+    with DB() as db:
+        if data := db.get_link(link):
+            return redirect(data, code=302)
+        return render_template(
+            '404.html'
+        ), 404
 
 
 if __name__ == "__main__":
