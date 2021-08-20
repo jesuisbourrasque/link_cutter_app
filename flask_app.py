@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, redirect
 from main import main
 
 app = Flask(__name__)
@@ -32,9 +32,8 @@ def get_link(link):
     if data := main(url=link):
         return redirect(data, code=302)
     return render_template(
-        'link.html',
-        data='No such a link'
-    )
+        '404.html'
+    ), 404
 
 
 if __name__ == "__main__":

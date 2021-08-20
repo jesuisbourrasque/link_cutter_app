@@ -34,3 +34,4 @@ def main(url=None, short_url=None, generate=False):
 
 if __name__ == '__main__':
     main()
+
