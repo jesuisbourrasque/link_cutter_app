@@ -1,5 +1,7 @@
 import sqlite3
+import os
 from typing import Optional
+from constants import PROJECT_ROOT
 
 import shortuuid
 
@@ -10,7 +12,7 @@ class DB:
         self.cursor = None
 
     def __enter__(self) -> 'DB':
-        self.connection = sqlite3.connect('main_db.db')
+        self.connection = sqlite3.connect(os.path.join(PROJECT_ROOT, "main.db"))
         self.cursor = self.connection.cursor()
         return self
 
