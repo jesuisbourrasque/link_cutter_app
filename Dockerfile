@@ -1,6 +1,7 @@
 FROM python:3.9
-COPY requirements.txt /tmp
+
+COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
-WORKDIR /link_cutter_app
-COPY . .
-CMD python flask_app.py
+
+COPY . /link_cutter_app
+CMD python /link_cutter_app/flask_app.py
