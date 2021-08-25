@@ -13,6 +13,11 @@ def index():
     )
 
 
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html'), 404
+
+
 @app.route('/short_link', methods=['POST'])
 def post_links():
     long_link = request.form.get('long_link')
@@ -35,9 +40,12 @@ def get_link(link):
     with DB() as db:
         if data := db.get_link(link):
             return redirect(data, code=302)
-        return render_template(
-            '404.html'
-        ), 404
+        return page_not_found()
+
+
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html'), 404
 
 
 app.run(debug=True, host='0.0.0.0')
