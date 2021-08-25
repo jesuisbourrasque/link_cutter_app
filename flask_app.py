@@ -6,6 +6,11 @@ with DB() as db:
     db.create_schema()
 
 
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html'), 404
+
+
 @app.route('/')
 def index():
     return render_template(
@@ -13,12 +18,7 @@ def index():
     )
 
 
-@app.errorhandler(404)
-def page_not_found():
-    return render_template('404.html'), 404
-
-
-@app.route('/short_link', methods=['POST'])
+@app.route('/', methods=['POST'])
 def post_links():
     long_link = request.form.get('long_link')
     short_link = request.form.get('short_link')
@@ -39,7 +39,7 @@ def post_links():
         )
 
 
-@app.route('/short_link/<link>', methods=['GET'])
+@app.route('/<link>', methods=['GET'])
 def get_link(link):
     with DB() as db:
         if data := db.get_link(link):
