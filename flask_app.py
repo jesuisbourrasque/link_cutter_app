@@ -29,6 +29,10 @@ def post_links():
         )
     with DB() as db:
         data = db.post_links(long_link, short_link)
+        if not data:
+            data = 'such a short link already exists'
+        else:
+            data = f'your short link - {short_link}'
         return render_template(
             'link.html',
             data=data
